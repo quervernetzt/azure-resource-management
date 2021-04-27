@@ -1,0 +1,67 @@
+parameters:
+  serviceConnection: ""
+  subscriptionId: ""
+  resourceGroupName: ""
+  deploymentLocation: ""
+  deploymentMode: ""
+  deploymentNamePrefix: ""
+  azureFunctionAppName: ""
+  azureFunctionHostingPlanName: ""
+  azureFunctionHostingPlanSize: ""
+  azureFunctionHostingPlanMinimumNumberOfWorkers: ""
+  azureFunctionHostingPlanMaximumNumberOfWorkers: ""
+  azureFunctionUse32BitWorkerProcess: ""
+  azureFunctionLinxuFxVersion: ""
+  azureStorageAccountName: ""
+
+steps:
+  # Deploy Azure Function App
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: "Deploy Azure Function App"
+    inputs:
+      deploymentScope: "Resource Group"
+      azureResourceManagerConnection: "${{parameters.serviceConnection}}"
+      subscriptionId: "${{parameters.subscriptionId}}"
+      action: "Create Or Update Resource Group"
+      resourceGroupName: "${{parameters.resourceGroupName}}"
+      location: "${{parameters.deploymentLocation}}"
+      templateLocation: "Linked artifact"
+      csmFile: "$(Pipeline.Workspace)/drop/deployment/arm/azurefunction.template.json"
+      overrideParameters:
+        -subscriptionId "${{parameters.subscriptionId}}"
+        -resourceGroup "${{parameters.resourceGroupName}}"
+        -name "${{parameters.azureFunctionAppName}}"
+        -location "${{parameters.deploymentLocation}}"
+        -hostingPlanName "${{parameters.azureFunctionHostingPlanName}}"
+        -hostingPlanSize "${{parameters.azureFunctionHostingPlanSize}}"
+        -hostingPlanMinimumNumberOfWorkers "${{parameters.azureFunctionHostingPlanMinimumNumberOfWorkers}}"
+        -hostingPlanMaximumNumberOfWorkers "${{parameters.azureFunctionHostingPlanMaximumNumberOfWorkers}}"
+        -use32BitWorkerProcess "${{parameters.azureFunctionUse32BitWorkerProcess}}"
+        -linuxFxVersion "${{parameters.azureFunctionLinxuFxVersion}}"
+        -storageAccountName "${{parameters.azureStorageAccountName}}"
+      deploymentMode: "${{parameters.deploymentMode}}"
+      deploymentName: "${{parameters.deploymentNamePrefix}}-azure-function-deployment"
+      deploymentOutputs: "azureFunctionDeploymentOutput"
+
+  # Prepare App Settings
+  # - task: AzurePowerShell@5
+  #   displayName: "Prepare App Settings"
+  #   inputs:
+  #     azureSubscription: "${{parameters.serviceConnection}}"
+  #     ScriptType: "FilePath"
+  #     ScriptPath: "$(Pipeline.Workspace)/drop/deployment/scripts/azure-functions-prepare-app-settings.ps1"
+  #     azurePowerShellVersion: "LatestVersion"
+  #     ScriptArguments:
+  #       -KeyVaultName "${{parameters.keyVaultName}}"
+  #       -SecretNames "xxx"
+
+  # Deploy Functions
+  - task: AzureFunctionApp@1
+    displayName: "Deploy Azure Functions"
+    inputs:
+      azureSubscription: "${{parameters.serviceConnection}}"
+      appType: "functionAppLinux"
+      appName: "${{parameters.azureFunctionAppName}}"
+      package: "$(Pipeline.Workspace)/drop/deployment/functions/*.zip"
+      runtimeStack: "PYTHON|3.8"
+      appSettings: "-test test"

@@ -1,0 +1,39 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "value": "xxx-xxx"
+        },
+        "resourceGroup": {
+            "value": "dev_TestResourceGroup"
+        },
+        "name": {
+            "value": "dev_TestName"
+        },
+        "location": {
+            "value": "westeurope"
+        },
+        "hostingPlanName": {
+            "value": "dev_TestPlanName"
+        },
+        "hostingPlanSize": {
+            "value": "EP1"
+        },
+        "hostingPlanMinimumNumberOfWorkers": {
+            "value": 1
+        },
+        "hostingPlanMaximumNumberOfWorkers": {
+            "value": 10
+        },
+        "use32BitWorkerProcess": {
+            "value": false
+        },
+        "linuxFxVersion": {
+            "value": "Python|3.8"
+        },
+        "storageAccountName": {
+            "value": "devteststoragename"
+        }
+    }
+}
