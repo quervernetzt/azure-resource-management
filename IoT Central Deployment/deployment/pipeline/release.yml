@@ -5,13 +5,14 @@ parameters:
   deploymentLocation: ""
   deploymentMode: ""
   deploymentNamePrefix: ""
-  iotCentralInstanceName: ""
+  iotCentralAppName: ""
   iotCentralSubdomain: ""
   iotCentralSku: ""
   iotCentralDiagnosticSettingName: ""
   iotCentralDiagnosticLogsRetentionInDays: ""
   iotCentralDiagnosticStorageAccountId: ""
   iotCentralTags: ""
+  ioTCentralUsers: ""
 
 steps:
   # Deploy IoT Central
@@ -27,7 +28,7 @@ steps:
       templateLocation: "Linked artifact"
       csmFile: "$(Pipeline.Workspace)/drop/deployment/arm/iotcentral.template.json"
       overrideParameters:
-        -instanceName "${{parameters.iotCentralInstanceName}}"
+        -instanceName "${{parameters.iotCentralAppName}}"
         -subdomain "${{parameters.iotCentralSubdomain}}"
         -location "${{parameters.deploymentLocation}}"
         -sku "${{parameters.iotCentralSku}}"
@@ -38,3 +39,15 @@ steps:
       deploymentMode: "${{parameters.deploymentMode}}"
       deploymentName: "${{parameters.deploymentNamePrefix}}iot-central-deployment"
       deploymentOutputs: "iotCentralDeploymentOutput"
+
+  # Set Up IoT Central
+  - task: AzureCLI@2
+    displayName: "Set Up IoT Central"
+    inputs:
+      azureSubscription: "${{parameters.serviceConnection}}"
+      scriptType: "pscore"
+      scriptLocation: "scriptPath"
+      scriptPath: "$(Pipeline.Workspace)/drop/deployment/scripts/iot-central-setup.ps1"
+      arguments:
+        -IoTCentralAppName "${{parameters.iotCentralAppName}}"
+        -IoTCentralUsers "${{parameters.iotCentralUsers}}"     

@@ -15,9 +15,9 @@ variables:
     value: "Incremental"
     readonly: true
   - name: "deploymentNamePrefix"
-    value: "xxx"
+    value: "test"
     readonly: true
-  - name: "iotCentralInstanceName"
+  - name: "iotCentralAppName"
     value: "xxx"
     readonly: true
   - name: "iotCentralSubdomain"
@@ -41,4 +41,16 @@ variables:
       'key1': 'value1',
       'key2': 'value2'
     }"
+    readonly: true
+  - name: "iotCentralUsers"
+    value: "[
+      {
+        'email': 'xxx@xxx.com',
+        'roles': [
+          'admin', 
+          'builder', 
+          'operator'
+        ]
+      }
+    ]"
     readonly: true

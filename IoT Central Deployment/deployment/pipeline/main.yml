@@ -30,12 +30,12 @@ stages:
   # Release
   ###################################################
   - stage: global
-    displayName: "Deployment of Azure Function App"
+    displayName: "Deployment of IoT Central"
     dependsOn: build_stage
     condition: succeeded()
     jobs:
       - deployment: deploy_global
-        displayName: "Deployment of Azure Function App"
+        displayName: "Deployment of IoT Central"
         environment: "Global"
         strategy:
           runOnce:
@@ -49,10 +49,11 @@ stages:
                     deploymentLocation: "${{variables.deploymentLocation}}"
                     deploymentMode: "${{variables.deploymentMode}}"
                     deploymentNamePrefix: "${{variables.deploymentNamePrefix}}"
-                    iotCentralInstanceName: "${{variables.iotCentralInstanceName}}"
+                    iotCentralAppName: "${{variables.iotCentralAppName}}"
                     iotCentralSubdomain: "${{variables.iotCentralSubdomain}}"
                     iotCentralSku: "${{variables.iotCentralSku}}"
                     iotCentralDiagnosticSettingName: "${{variables.iotCentralDiagnosticSettingName}}"
                     iotCentralDiagnosticLogsRetentionInDays: "${{variables.iotCentralDiagnosticLogsRetentionInDays}}"
                     iotCentralDiagnosticStorageAccountId: "${{variables.iotCentralDiagnosticStorageAccountId}}"
                     iotCentralTags: "${{variables.iotCentralTags}}"
+                    iotCentralUsers: "${{variables.iotCentralUsers}}"
