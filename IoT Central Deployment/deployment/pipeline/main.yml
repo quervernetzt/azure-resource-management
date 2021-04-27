@@ -1,0 +1,58 @@
+name: $(Year:yyyy).$(Month).$(Date:dd)$(Rev:.r)
+
+trigger:
+  batch: false
+  branches:
+    include:
+      - main
+
+pr: none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  - template: ../templates/variables/global.yml
+
+stages:
+  ###################################################
+  # Build
+  ###################################################
+  - stage: build_stage
+    displayName: "Build"
+    jobs:
+      - job: Build
+        displayName: "Build"
+        steps:
+          - template: build.yml
+
+  ###################################################
+  # Release
+  ###################################################
+  - stage: global
+    displayName: "Deployment of Azure Function App"
+    dependsOn: build_stage
+    condition: succeeded()
+    jobs:
+      - deployment: deploy_global
+        displayName: "Deployment of Azure Function App"
+        environment: "Global"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: release.yml
+                  parameters:
+                    serviceConnection: "${{variables.serviceConnection}}"
+                    subscriptionId: "${{variables.subscriptionId}}"
+                    resourceGroupName: "${{variables.resourceGroupName}}"
+                    deploymentLocation: "${{variables.deploymentLocation}}"
+                    deploymentMode: "${{variables.deploymentMode}}"
+                    deploymentNamePrefix: "${{variables.deploymentNamePrefix}}"
+                    iotCentralInstanceName: "${{variables.iotCentralInstanceName}}"
+                    iotCentralSubdomain: "${{variables.iotCentralSubdomain}}"
+                    iotCentralSku: "${{variables.iotCentralSku}}"
+                    iotCentralDiagnosticSettingName: "${{variables.iotCentralDiagnosticSettingName}}"
+                    iotCentralDiagnosticLogsRetentionInDays: "${{variables.iotCentralDiagnosticLogsRetentionInDays}}"
+                    iotCentralDiagnosticStorageAccountId: "${{variables.iotCentralDiagnosticStorageAccountId}}"
+                    iotCentralTags: "${{variables.iotCentralTags}}"

@@ -1,0 +1,13 @@
+steps: 
+  - task: CopyFiles@2
+    displayName: "Copy deployment template/pipeline definitions and scripts to artifacts"
+    inputs:
+      SourceFolder: "$(Build.SourcesDirectory)/deployment"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)/deployment"
+      Contents: '**'
+
+  - task: PublishPipelineArtifact@0
+    displayName: "Publish pipeline artifacts"
+    inputs:
+      artifactName: "drop"
+      targetPath: "$(Build.ArtifactStagingDirectory)"

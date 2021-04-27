@@ -1,0 +1,44 @@
+variables:
+  - name: "serviceConnection"
+    value: "xxx-xxx-xxx-xxx-xxx"
+    readonly: true
+  - name: "subscriptionId"
+    value: "xxx-xxx-xxx-xxx-xxx"
+    readonly: true
+  - name: "resourceGroupName"
+    value: "xxx"
+    readonly: true
+  - name: "deploymentLocation"
+    value: "westeurope"
+    readonly: true
+  - name: "deploymentMode"
+    value: "Incremental"
+    readonly: true
+  - name: "deploymentNamePrefix"
+    value: "xxx"
+    readonly: true
+  - name: "iotCentralInstanceName"
+    value: "xxx"
+    readonly: true
+  - name: "iotCentralSubdomain"
+    value: "xxx"
+    readonly: true
+  # https://azure.microsoft.com/en-us/pricing/details/iot-central/
+  - name: "iotCentralSku"
+    value: "ST2"
+    readonly: true
+  - name: "iotCentralDiagnosticSettingName"
+    value: "logToStorage"
+    readonly: true
+  - name: "iotCentralDiagnosticLogsRetentionInDays"
+    value: 7
+    readonly: true
+  - name: "iotCentralDiagnosticStorageAccountId"
+    value: "/subscriptions/xxx-xxx-xxx-xxx-xxx/resourceGroups/xxx/providers/Microsoft.Storage/storageAccounts/xxx"
+    readonly: true
+  - name: "iotCentralTags"
+    value: "{    
+      'key1': 'value1',
+      'key2': 'value2'
+    }"
+    readonly: true

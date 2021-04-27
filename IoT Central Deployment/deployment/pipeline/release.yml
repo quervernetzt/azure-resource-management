@@ -1,0 +1,40 @@
+parameters:
+  serviceConnection: ""
+  subscriptionId: ""
+  resourceGroupName: ""
+  deploymentLocation: ""
+  deploymentMode: ""
+  deploymentNamePrefix: ""
+  iotCentralInstanceName: ""
+  iotCentralSubdomain: ""
+  iotCentralSku: ""
+  iotCentralDiagnosticSettingName: ""
+  iotCentralDiagnosticLogsRetentionInDays: ""
+  iotCentralDiagnosticStorageAccountId: ""
+  iotCentralTags: ""
+
+steps:
+  # Deploy IoT Central
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: "Deploy IoT Central Instance"
+    inputs:
+      deploymentScope: "Resource Group"
+      azureResourceManagerConnection: "${{parameters.serviceConnection}}"
+      subscriptionId: "${{parameters.subscriptionId}}"
+      action: "Create Or Update Resource Group"
+      resourceGroupName: "${{parameters.resourceGroupName}}"
+      location: "${{parameters.deploymentLocation}}"
+      templateLocation: "Linked artifact"
+      csmFile: "$(Pipeline.Workspace)/drop/deployment/arm/iotcentral.template.json"
+      overrideParameters:
+        -instanceName "${{parameters.iotCentralInstanceName}}"
+        -subdomain "${{parameters.iotCentralSubdomain}}"
+        -location "${{parameters.deploymentLocation}}"
+        -sku "${{parameters.iotCentralSku}}"
+        -diagnosticSettingName "${{parameters.iotCentralDiagnosticSettingName}}"
+        -diagnosticLogsRetentionInDays "${{parameters.iotCentralDiagnosticLogsRetentionInDays}}"
+        -diagnosticStorageAccountId "${{parameters.iotCentralDiagnosticStorageAccountId}}"
+        -tags "${{parameters.iotCentralTags}}"
+      deploymentMode: "${{parameters.deploymentMode}}"
+      deploymentName: "${{parameters.deploymentNamePrefix}}iot-central-deployment"
+      deploymentOutputs: "iotCentralDeploymentOutput"
