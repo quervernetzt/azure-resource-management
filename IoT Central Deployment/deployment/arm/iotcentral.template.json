@@ -1,0 +1,162 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "instanceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Required. The ARM resource name of the IoT Central application."
+            }
+        },
+        "subdomain": {
+            "type": "string",
+            "metadata": {
+                "description": "Required. The subdomain of the application."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Required. The resource location."
+            }
+        },
+        "sku": {
+            "type": "string",
+            "metadata": {
+                "description": "Required. A valid instance SKU."
+            }
+        },
+        "template": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. The ID of the application template, which is a blueprint that defines the characteristics and behaviors of an application. Optional; if not specified, defaults to a blank blueprint and allows the application to be defined from scratch."
+            }
+        },
+        "lockForDeletion": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Optional. Switch to lock resource from deletion."
+            }
+        },
+        "diagnosticSettingName": {
+            "type": "string",
+            "defaultValue": "service",
+            "metadata": {
+                "description": "Optional. The name of the Diagnostic setting."
+            }
+        },
+        "diagnosticLogsRetentionInDays": {
+            "type": "int",
+            "defaultValue": 365,
+            "minValue": 0,
+            "maxValue": 365,
+            "metadata": {
+                "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+            }
+        },
+        "diagnosticStorageAccountId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Resource identifier of the Diagnostic Storage Account."
+            }
+        },
+        "diagnosticWorkspaceId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Resource identifier of Log Analytics."
+            }
+        },
+        "diagnosticEventHubAuthorizationRuleId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Resource ID of the event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+            }
+        },
+        "diagnosticEventHubName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Name of the event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
+            }
+        },
+        "tags": {
+            "type": "string",
+            "defaultValue": "{}",
+            "metadata": {
+                "description": "Optional. Tags of the resource."
+            }
+        }
+    },
+    "variables": {
+        "diagnosticsMetrics": [
+            {
+                "category": "AllMetrics",
+                "timeGrain": null,
+                "enabled": true,
+                "retentionPolicy": {
+                    "enabled": true,
+                    "days": "[parameters('diagnosticLogsRetentionInDays')]"
+                }
+            }
+        ],
+        "diagnosticsLogs": [],
+        "tagsObject": "[json(parameters('tags'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.IoTCentral/IoTApps",
+            "name": "[parameters('instanceName')]",
+            "location": "[parameters('location')]",
+            "apiVersion": "2018-09-01",
+            "tags": "[variables('tagsObject')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "properties": {
+                "displayName": "[parameters('instanceName')]",
+                "subdomain": "[parameters('subdomain')]",
+                "template": "[parameters('template')]"
+            },
+            "resources": [
+                // Lock
+                {
+                    "type": "providers/locks",
+                    "apiVersion": "2016-09-01",
+                    "condition": "[parameters('lockForDeletion')]",
+                    "name": "Microsoft.Authorization/iotCentralDoNotDelete",
+                    "dependsOn": [
+                        "[concat('Microsoft.IoTCentral/IoTApps/', parameters('instanceName'))]"
+                    ],
+                    "comments": "Resource lock",
+                    "properties": {
+                        "level": "CannotDelete"
+                    }
+                },
+                // Diagnostic Settings
+                // Requires the related resource already provisioned (e.g. storage account)
+                {
+                    "type": "Microsoft.IoTCentral/IoTApps/providers/diagnosticsettings",
+                    "apiVersion": "2017-05-01-preview",
+                    "name": "[concat(parameters('instanceName'), '/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+                    "condition": "[or(not(empty(parameters('diagnosticStorageAccountId'))),not(empty(parameters('diagnosticWorkspaceId'))),not(empty(parameters('diagnosticEventHubAuthorizationRuleId'))),not(empty(parameters('diagnosticEventHubName'))))]",
+                    "dependsOn": [
+                        "[concat('Microsoft.IoTCentral/IoTApps/', parameters('instanceName'))]"
+                    ],
+                    "properties": {
+                        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), json('null'), parameters('diagnosticStorageAccountId'))]",
+                        "workspaceId": "[if(empty(parameters('diagnosticWorkspaceId')), json('null'), parameters('diagnosticWorkspaceId'))]",
+                        "eventHubAuthorizationRuleId": "[if(empty(parameters('diagnosticEventHubAuthorizationRuleId')), json('null'), parameters('diagnosticEventHubAuthorizationRuleId'))]",
+                        "eventHubName": "[if(empty(parameters('diagnosticEventHubName')), json('null'), parameters('diagnosticEventHubName'))]",
+                        "metrics": "[if(and(empty(parameters('diagnosticStorageAccountId')), empty(parameters('diagnosticWorkspaceId')), empty(parameters('diagnosticEventHubAuthorizationRuleId')), empty(parameters('diagnosticEventHubName'))), json('null'), variables('diagnosticsMetrics'))]",
+                        "logs": "[if(and(empty(parameters('diagnosticStorageAccountId')), empty(parameters('diagnosticWorkspaceId')), empty(parameters('diagnosticEventHubAuthorizationRuleId')), empty(parameters('diagnosticEventHubName'))), json('null'), variables('diagnosticsLogs'))]"
+                    }
+                }
+            ]
+        }
+    ]
+}
