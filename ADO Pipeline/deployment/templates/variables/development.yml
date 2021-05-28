@@ -1,0 +1,37 @@
+variables:
+  - name: "environmentPrefix"
+    value: "dev"
+    readonly: true
+  - name: "resourceGroupName"
+    value: "${{variables.environmentPrefix}}_testrg"
+    readonly: true
+  - name: "deploymentLocation"
+    value: "westeurope"
+    readonly: true
+  - name: "deploymentNamePrefix"
+    value: "${{variables.environmentPrefix}}_af"
+    readonly: true
+  - name: "azureFunctionAppName"
+    value: "${{variables.environmentPrefix}}testaf"
+    readonly: true
+  - name: "azureFunctionHostingPlanName"
+    value: "${{variables.environmentPrefix}}_testaf-hp"
+    readonly: true
+  - name: "azureFunctionHostingPlanSize"
+    value: "EP1"
+    readonly: true
+  - name: "azureFunctionHostingPlanMinimumNumberOfWorkers"
+    value: 1
+    readonly: true
+  - name: "azureFunctionHostingPlanMaximumNumberOfWorkers"
+    value: 10
+    readonly: true
+  - name: "azureFunctionUse32BitWorkerProcess"
+    value: false
+    readonly: true
+  - name: "azureFunctionLinxuFxVersion"
+    value: "Python|3.8"
+    readonly: true
+  - name: "azureStorageAccountName"
+    value: "${{variables.environmentPrefix}}teststrg"
+    readonly: true

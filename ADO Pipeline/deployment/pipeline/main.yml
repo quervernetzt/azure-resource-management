@@ -29,14 +29,47 @@ stages:
   ###################################################
   # Release
   ###################################################
-  - stage: global
+  - stage: development
     displayName: "Deployment of Azure Function App"
     dependsOn: build_stage
     condition: succeeded()
+    variables:
+      - template: ../templates/variables/development.yml
     jobs:
-      - deployment: deploy_global
+      - deployment: deploy_development
         displayName: "Deployment of Azure Function App"
-        environment: "Global"
+        environment: "Development"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: release.yml
+                  parameters:
+                    serviceConnection: "${{variables.serviceConnection}}"
+                    subscriptionId: "${{variables.subscriptionId}}"
+                    resourceGroupName: "${{variables.resourceGroupName}}"
+                    deploymentLocation: "${{variables.deploymentLocation}}"
+                    deploymentMode: "${{variables.deploymentMode}}"
+                    deploymentNamePrefix: "${{variables.deploymentNamePrefix}}"
+                    azureFunctionAppName: "${{variables.azureFunctionAppName}}"
+                    azureFunctionHostingPlanName: "${{variables.azureFunctionHostingPlanName}}"
+                    azureFunctionHostingPlanSize: "${{variables.azureFunctionHostingPlanSize}}"
+                    azureFunctionHostingPlanMinimumNumberOfWorkers: "${{variables.azureFunctionHostingPlanMinimumNumberOfWorkers}}"
+                    azureFunctionHostingPlanMaximumNumberOfWorkers: "${{variables.azureFunctionHostingPlanMaximumNumberOfWorkers}}"
+                    azureFunctionUse32BitWorkerProcess: "${{variables.azureFunctionUse32BitWorkerProcess}}"
+                    azureFunctionLinxuFxVersion: "${{variables.azureFunctionLinxuFxVersion}}"
+                    azureStorageAccountName: "${{variables.azureStorageAccountName}}"
+  
+  - stage: production
+    displayName: "Deployment of Azure Function App"
+    dependsOn: development
+    condition: succeeded()
+    variables:
+      - template: ../templates/variables/production.yml
+    jobs:
+      - deployment: deploy_production
+        displayName: "Deployment of Azure Function App"
+        environment: "Production"
         strategy:
           runOnce:
             deploy:

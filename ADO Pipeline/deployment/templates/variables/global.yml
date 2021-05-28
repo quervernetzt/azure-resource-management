@@ -5,39 +5,6 @@ variables:
   - name: "subscriptionId"
     value: "xxx"
     readonly: true
-  - name: "resourceGroupName"
-    value: "xxx"
-    readonly: true
-  - name: "deploymentLocation"
-    value: "westeurope"
-    readonly: true
   - name: "deploymentMode"
     value: "Incremental"
-    readonly: true
-  - name: "deploymentNamePrefix"
-    value: "xxx"
-    readonly: true
-  - name: "azureFunctionAppName"
-    value: "xxx"
-    readonly: true
-  - name: "azureFunctionHostingPlanName"
-    value: "xxx"
-    readonly: true
-  - name: "azureFunctionHostingPlanSize"
-    value: "EP1"
-    readonly: true
-  - name: "azureFunctionHostingPlanMinimumNumberOfWorkers"
-    value: 1
-    readonly: true
-  - name: "azureFunctionHostingPlanMaximumNumberOfWorkers"
-    value: 10
-    readonly: true
-  - name: "azureFunctionUse32BitWorkerProcess"
-    value: false
-    readonly: true
-  - name: "azureFunctionLinxuFxVersion"
-    value: "Python|3.8"
-    readonly: true
-  - name: "azureStorageAccountName"
-    value: "xxx"
     readonly: true
